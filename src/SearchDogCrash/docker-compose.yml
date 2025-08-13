@@ -1,0 +1,13 @@
+services:
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    ports:
+      - 127.0.0.1:41433:1433
+    environment:
+      ACCEPT_EULA: true
+      MSSQL_SA_PASSWORD: bbb53e85-b15e-4da8-71e6-a7d3b00a0ab2
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'

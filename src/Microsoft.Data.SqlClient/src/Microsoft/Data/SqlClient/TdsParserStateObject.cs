@@ -21,7 +21,7 @@ namespace Microsoft.Data.SqlClient
 #if NETFRAMEWORK
     using RuntimeHelpers = System.Runtime.CompilerServices.RuntimeHelpers;
 #endif
-    
+
     sealed internal class LastIOTimer
     {
         internal long _value;
@@ -1532,7 +1532,7 @@ namespace Microsoft.Data.SqlClient
                 temp = TryTakeSnapshotStorage() as byte[];
                 Debug.Assert(temp != null || !isContinuing, "if continuing stored buffer must be present to contain previous data to continue from");
                 Debug.Assert(bytes == null || bytes.Length == length, "stored buffer length must be null or must have been created with the correct length");
-                
+
                 if (temp != null)
                 {
                     offset = GetSnapshotTotalSize();
@@ -1986,7 +1986,7 @@ namespace Microsoft.Data.SqlClient
                         buf = TryTakeSnapshotStorage() as byte[];
                         Debug.Assert(buf != null || !isContinuing, "if continuing stored buffer must be present to contain previous data to continue from");
                         Debug.Assert(buf == null || buf.Length == length, "stored buffer length must be null or must have been created with the correct length");
-                        
+
                         if (buf != null)
                         {
                             startOffset = GetSnapshotTotalSize();
@@ -1999,7 +1999,7 @@ namespace Microsoft.Data.SqlClient
                     }
 
                     TdsOperationStatus result = TryReadByteArray(buf, length, out _, startOffset, canContinue);
-                    
+
                     if (result != TdsOperationStatus.Done)
                     {
                         if (result == TdsOperationStatus.NeedMoreData)
@@ -3207,7 +3207,7 @@ namespace Microsoft.Data.SqlClient
                             }
                         }
                         else
-                        {   
+                        {
                             // this call to IncrementPendingCallbacks is required for balance
                             // the _pendingCallbacks counter will be unconditionally decremented in ReadAsyncCallback
                             //  so we must make sure that even though we are not making a network call that we do
@@ -3231,7 +3231,7 @@ namespace Microsoft.Data.SqlClient
 
                 if (TdsEnums.SNI_SUCCESS == error)
                 { // Success - process results!
-                    Debug.Assert(!readFromNetwork || IsValidPacket(readPacket) , "ReadNetworkPacket should not have been null on this async operation!");
+                    Debug.Assert(!readFromNetwork || IsValidPacket(readPacket), "ReadNetworkPacket should not have been null on this async operation!");
                     // Evaluate this condition for MANAGED_SNI. This may not be needed because the network call is happening Async and only the callback can receive a success.
                     ReadAsyncCallback(IntPtr.Zero, readPacket, 0);
 
@@ -3482,7 +3482,7 @@ namespace Microsoft.Data.SqlClient
         /// packet parsing.
         /// </summary>
         /// <returns></returns>
-        internal string DumpBuffer() 
+        internal string DumpBuffer()
         {
             StringBuilder buffer = new StringBuilder(128);
             buffer.AppendLine("dumping buffer");
@@ -3491,25 +3491,9 @@ namespace Microsoft.Data.SqlClient
             int cc = 0; // character counter
             int i;
             buffer.AppendLine("used buffer:");
-            for (i=0; i< _inBytesUsed; i++) 
+            for (i = 0; i < _inBytesUsed; i++)
             {
-                if (cc==16) {
-                    buffer.AppendLine();
-                    cc = 0;
-                }
-                buffer.AppendFormat("{0,-2:X2} ", _inBuff[i]);
-                cc++;
-            }
-            if (cc>0) 
-            {
-                buffer.AppendLine();
-            }
-
-            cc = 0;
-            buffer.AppendLine("unused buffer:");
-            for (i=_inBytesUsed; i<_inBytesRead; i++) 
-            {
-                if (cc==16) 
+                if (cc == 16)
                 {
                     buffer.AppendLine();
                     cc = 0;
@@ -3517,13 +3501,30 @@ namespace Microsoft.Data.SqlClient
                 buffer.AppendFormat("{0,-2:X2} ", _inBuff[i]);
                 cc++;
             }
-            if (cc>0) 
+            if (cc > 0)
+            {
+                buffer.AppendLine();
+            }
+
+            cc = 0;
+            buffer.AppendLine("unused buffer:");
+            for (i = _inBytesUsed; i < _inBytesRead; i++)
+            {
+                if (cc == 16)
+                {
+                    buffer.AppendLine();
+                    cc = 0;
+                }
+                buffer.AppendFormat("{0,-2:X2} ", _inBuff[i]);
+                cc++;
+            }
+            if (cc > 0)
             {
                 buffer.AppendLine();
             }
             return buffer.ToString();
         }
-        
+
         internal void SetSnapshot()
         {
             StateSnapshot snapshot = _snapshot;
@@ -3825,33 +3826,53 @@ namespace Microsoft.Data.SqlClient
                         _data = data;
                     }
 
-                    public string Type {
+                    public string Type
+                    {
 
                         get
                         {
-                            if (_data != null && _data.Buffer!=null)
+                            if (_data != null && _data.Buffer != null)
                             {
                                 switch (_data.Buffer[0])
                                 {
-                                    case 1: return nameof(TdsEnums.MT_SQL);
-                                    case 2: return nameof(TdsEnums.MT_LOGIN);
-                                    case 3: return nameof(TdsEnums.MT_RPC);
-                                    case 4: return nameof(TdsEnums.MT_TOKENS);
-                                    case 5: return nameof(TdsEnums.MT_BINARY);
-                                    case 6: return nameof(TdsEnums.MT_ATTN);
-                                    case 7: return nameof(TdsEnums.MT_BULK);
-                                    case 8: return nameof(TdsEnums.MT_FEDAUTH);
-                                    case 9: return nameof(TdsEnums.MT_CLOSE);
-                                    case 10: return nameof(TdsEnums.MT_ERROR);
-                                    case 11: return nameof(TdsEnums.MT_ACK);
-                                    case 12: return nameof(TdsEnums.MT_ECHO);
-                                    case 13: return nameof(TdsEnums.MT_LOGOUT);
-                                    case 14: return nameof(TdsEnums.MT_TRANS);
-                                    case 15: return nameof(TdsEnums.MT_OLEDB);
-                                    case 16: return nameof(TdsEnums.MT_LOGIN7);
-                                    case 17: return nameof(TdsEnums.MT_SSPI);
-                                    case 18: return nameof(TdsEnums.MT_PRELOGIN);
-                                    default: return _data.Buffer[0].ToString("X2");
+                                    case 1:
+                                        return nameof(TdsEnums.MT_SQL);
+                                    case 2:
+                                        return nameof(TdsEnums.MT_LOGIN);
+                                    case 3:
+                                        return nameof(TdsEnums.MT_RPC);
+                                    case 4:
+                                        return nameof(TdsEnums.MT_TOKENS);
+                                    case 5:
+                                        return nameof(TdsEnums.MT_BINARY);
+                                    case 6:
+                                        return nameof(TdsEnums.MT_ATTN);
+                                    case 7:
+                                        return nameof(TdsEnums.MT_BULK);
+                                    case 8:
+                                        return nameof(TdsEnums.MT_FEDAUTH);
+                                    case 9:
+                                        return nameof(TdsEnums.MT_CLOSE);
+                                    case 10:
+                                        return nameof(TdsEnums.MT_ERROR);
+                                    case 11:
+                                        return nameof(TdsEnums.MT_ACK);
+                                    case 12:
+                                        return nameof(TdsEnums.MT_ECHO);
+                                    case 13:
+                                        return nameof(TdsEnums.MT_LOGOUT);
+                                    case 14:
+                                        return nameof(TdsEnums.MT_TRANS);
+                                    case 15:
+                                        return nameof(TdsEnums.MT_OLEDB);
+                                    case 16:
+                                        return nameof(TdsEnums.MT_LOGIN7);
+                                    case 17:
+                                        return nameof(TdsEnums.MT_SSPI);
+                                    case 18:
+                                        return nameof(TdsEnums.MT_PRELOGIN);
+                                    default:
+                                        return _data.Buffer[0].ToString("X2");
                                 }
                             }
                             return "";
@@ -3960,7 +3981,7 @@ namespace Microsoft.Data.SqlClient
                     {
                         Hash = null;
                     }
-                    
+
                 }
 
                 partial void CheckDebugDataHashImpl()
@@ -4154,8 +4175,9 @@ namespace Microsoft.Data.SqlClient
             internal void AppendPacketData(byte[] buffer, int read)
             {
                 Debug.Assert(buffer != null, "packet data cannot be null");
-                Debug.Assert(read >= TdsEnums.HEADER_LEN, "minimum packet length is TdsEnums.HEADER_LEN");
-                Debug.Assert(TdsEnums.HEADER_LEN + Packet.GetDataLengthFromHeader(buffer) == read, "partially read packets cannot be appended to the snapshot");
+                Debug.Assert(LocalAppContextSwitches.UseCompatibilityProcessSni || read >= TdsEnums.HEADER_LEN, "minimum packet length is TdsEnums.HEADER_LEN");
+                Debug.Assert(LocalAppContextSwitches.UseCompatibilityProcessSni || TdsEnums.HEADER_LEN + Packet.GetDataLengthFromHeader(buffer) == read, "partially read packets cannot be appended to the snapshot");
+
 #if DEBUG
                 for (PacketData current = _firstPacket; current != null; current = current.NextPacket)
                 {
